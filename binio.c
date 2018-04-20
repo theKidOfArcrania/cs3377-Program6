@@ -1,19 +1,19 @@
 #include <stdio.h>
-#include "prog5.h"
+#include <stdlib.h>
+#include "prog6.h"
 
-#define check_read(file, ptr, size) do {                 \
-  if (fread((ptr), (size), 1, (file)->handle) != (size)) \
-    goto errOut;                                         \
-  }                                                      \
+#define check_read(file, ptr, size) do {            \
+  if (fread((ptr), (size), 1, (file)->handle) != 1) \
+    goto errOut;                                    \
 } while(0)
 
 struct bin_file_data {
-  FILE*      handle;
-  bin_header head;
-  bin_record next;
-}
+  FILE*             handle;
+  struct bin_header head;
+  struct bin_record next;
+};
 
-HBIN bin_open(char* filename) {
+HBIN bin_open(const char* filename) {
   struct bin_file_data* file = malloc(sizeof(struct bin_file_data));
   if (!file) {
     goto errOut;
@@ -24,14 +24,14 @@ HBIN bin_open(char* filename) {
   }
 
   check_read(file, &file->head, sizeof(struct bin_header));
-  return (HBIN)f;
+  return (HBIN)file;
 
 errOut:
   free(file);
   return NULL;
 }
 
-#define file ((struct bin_file_data)hfile)
+#define file ((struct bin_file_data*)hfile)
 struct bin_header* bin_getHeader(HBIN hfile) {
   return &file->head;
 }
